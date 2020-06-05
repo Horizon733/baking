@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.baking.models.Constants;
@@ -33,7 +36,12 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.material.navigation.NavigationView;
 
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 public class RecipeDetailFragment extends Fragment {
     private static String mVideoUrl;
@@ -90,7 +98,15 @@ public class RecipeDetailFragment extends Fragment {
         playerView = rootView.findViewById(R.id.player);
         descriptionTv = rootView.findViewById(R.id.description_tv);
         shortDescriptionTv = rootView.findViewById(R.id.short_description);
-
+        DrawerLayout drawerLayout = rootView.findViewById(R.id.drawer_layout);
+        NavigationView navigationView = rootView.findViewById(R.id.navigation);
+        Menu menu = navigationView.getMenu();
+        menu.add("Hello");
+        AppBarConfiguration mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.steps_list_root)
+                .setDrawerLayout(drawerLayout).build();
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController((AppCompatActivity) getActivity(), navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
         fullScreenmode();
         return rootView;
     }
@@ -211,4 +227,6 @@ public class RecipeDetailFragment extends Fragment {
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(PLAY_WHEN_READY , playWhenReady);
     }
+
+
 }
