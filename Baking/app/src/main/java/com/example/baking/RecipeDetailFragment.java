@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.baking.models.Constants;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -47,6 +48,8 @@ public class RecipeDetailFragment extends Fragment {
     static ImageView fullscreenButton;
     static TextView shortDescriptionTv;
     boolean fullScreen = false;
+    private final String SELECTED_POSITION = "selected_position";
+    private final String PLAY_WHEN_READY = "play_when_ready";
 
     public RecipeDetailFragment() {
 
@@ -80,11 +83,14 @@ public class RecipeDetailFragment extends Fragment {
             this.mThumbnailUrl = savedInstanceState.getString(Constants.THUMBNAIL);
             this.mDescription = savedInstanceState.getString(Constants.DESCRIPTION);
             this.mShortDescription = savedInstanceState.getString(Constants.SHORT_DESCRIPTION);
+            position = savedInstanceState.getLong(SELECTED_POSITION, C.TIME_UNSET);
+            playWhenReady = savedInstanceState.getBoolean(PLAY_WHEN_READY);
         }
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
         playerView = rootView.findViewById(R.id.player);
         descriptionTv = rootView.findViewById(R.id.description_tv);
         shortDescriptionTv = rootView.findViewById(R.id.short_description);
+
         fullScreenmode();
         return rootView;
     }
@@ -174,16 +180,17 @@ public class RecipeDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        if (mExoPlayer != null){
+            position = mExoPlayer.getCurrentPosition();
+            playWhenReady = mExoPlayer.getPlayWhenReady();
+            releasePlayer();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mExoPlayer != null) {
-            position = mExoPlayer.getCurrentPosition();
-            playWhenReady = mExoPlayer.getPlayWhenReady();
             releasePlayer();
-        }
     }
 
     private void releasePlayer() {
@@ -201,5 +208,7 @@ public class RecipeDetailFragment extends Fragment {
         outState.putString(Constants.THUMBNAIL, mThumbnailUrl);
         outState.putString(Constants.DESCRIPTION, mDescription);
         outState.putString(Constants.SHORT_DESCRIPTION, mShortDescription);
+        outState.putLong(SELECTED_POSITION, position);
+        outState.putBoolean(PLAY_WHEN_READY , playWhenReady);
     }
 }
