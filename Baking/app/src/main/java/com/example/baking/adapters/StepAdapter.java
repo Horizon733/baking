@@ -22,6 +22,7 @@ import com.example.baking.models.Constants;
 import com.example.baking.models.Steps;
 import com.google.android.exoplayer2.C;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepsViewHolder> {
@@ -63,10 +64,13 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepsViewHolde
                             .commit();
                 } else {
                     Intent intent = new Intent(mContext, RecipeDetailActivity.class);
+
                     intent.putExtra(Constants.VIDEO, steps.getVideoURL());
                     intent.putExtra(Constants.THUMBNAIL, steps.getThumbnailURL());
                     intent.putExtra(Constants.DESCRIPTION, steps.getDescription());
                     intent.putExtra(Constants.SHORT_DESCRIPTION, steps.getShortDescription());
+                    intent.putExtra(Constants.INGREDIENTS, (Serializable) mSteps);
+                    intent.putExtra(Constants.ID,steps.getId());
                     mContext.startActivity(intent);
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.baking;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.baking.models.Constants;
+import com.example.baking.models.Steps;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -43,6 +45,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import java.io.Serializable;
+import java.util.List;
+
 public class RecipeDetailFragment extends Fragment {
     private static String mVideoUrl;
     private static String mThumbnailUrl;
@@ -58,16 +63,20 @@ public class RecipeDetailFragment extends Fragment {
     boolean fullScreen = false;
     private final String SELECTED_POSITION = "selected_position";
     private final String PLAY_WHEN_READY = "play_when_ready";
-
+    static Button nextBtn;
+    List<Steps> stepsList;
+int id;
     public RecipeDetailFragment() {
 
     }
 
-    public RecipeDetailFragment(String videoUrl, String thumbnailUrl, String description, String shortDescription) {
+    public RecipeDetailFragment(int id,String videoUrl, String thumbnailUrl, String description, String shortDescription, List<Steps> steps) {
+        this.id = id;
         this.mVideoUrl = videoUrl;
         this.mThumbnailUrl = thumbnailUrl;
         this.mDescription = description;
         this.mShortDescription = shortDescription;
+        this.stepsList = steps;
     }
 
 
@@ -85,6 +94,7 @@ public class RecipeDetailFragment extends Fragment {
             this.mThumbnailUrl = bundle.getString(Constants.THUMBNAIL);
             this.mDescription = bundle.getString(Constants.DESCRIPTION);
             this.mShortDescription = bundle.getString(Constants.SHORT_DESCRIPTION);
+            this.stepsList = (List<Steps>) bundle.getSerializable(Constants.INGREDIENTS);
         }
         if (savedInstanceState != null) {
             this.mVideoUrl = savedInstanceState.getString(Constants.VIDEO);
@@ -98,7 +108,9 @@ public class RecipeDetailFragment extends Fragment {
         playerView = rootView.findViewById(R.id.player);
         descriptionTv = rootView.findViewById(R.id.description_tv);
         shortDescriptionTv = rootView.findViewById(R.id.short_description);
-      fullScreenmode();
+        nextBtn = rootView.findViewById(R.id.next_btn);
+
+        fullScreenmode();
         return rootView;
     }
 
@@ -174,6 +186,37 @@ public class RecipeDetailFragment extends Fragment {
 
         descriptionTv.setText(mDescription);
         shortDescriptionTv.setText(mShortDescription);
+
+            for (int i = 0; i < stepsList.size(); i++) {
+                final Steps steps = stepsList.get(i);
+                if(steps.getId() == id){
+                    Log.e("Id before",""+steps.getId());
+                    if(++i < stepsList.size()){
+                        --i;
+                    final Steps stepsNext = stepsList.get(++i);
+                        nextBtn.setText(stepsNext.getShortDescription());
+                        nextBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
+                                intent.putExtra(Constants.VIDEO, stepsNext.getVideoURL());
+                                intent.putExtra(Constants.THUMBNAIL, stepsNext.getThumbnailURL());
+                                intent.putExtra(Constants.DESCRIPTION, stepsNext.getDescription());
+                                intent.putExtra(Constants.SHORT_DESCRIPTION, stepsNext.getShortDescription());
+                                intent.putExtra(Constants.INGREDIENTS, (Serializable) stepsList);
+                                intent.putExtra(Constants.ID, stepsNext.getId());
+                                getContext().startActivity(intent);
+                            }
+                        });
+                    }else {
+                        nextBtn.setVisibility(View.GONE);
+                    }
+                }
+
+
+
+            }
+
         if (!TextUtils.isEmpty(mVideoUrl))
             initializerPlayer(Uri.parse(mVideoUrl));
         else if (!TextUtils.isEmpty(mThumbnailUrl)) {

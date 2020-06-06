@@ -11,8 +11,12 @@ import android.os.Bundle;
 import android.view.Menu;
 
 import com.example.baking.models.Constants;
+import com.example.baking.models.Steps;
 import com.google.android.exoplayer2.C;
 import com.google.android.material.navigation.NavigationView;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -20,22 +24,16 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
+        List<Steps> steps = (List<Steps>) getIntent().getSerializableExtra(Constants.INGREDIENTS);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container
-                        , new RecipeDetailFragment(getIntent().getStringExtra(Constants.VIDEO)
+                        , new RecipeDetailFragment(getIntent().getIntExtra(Constants.ID,0),getIntent().getStringExtra(Constants.VIDEO)
                                 , getIntent().getStringExtra(Constants.THUMBNAIL)
                                 , getIntent().getStringExtra(Constants.DESCRIPTION)
-                                , getIntent().getStringExtra(Constants.SHORT_DESCRIPTION)))
+                                , getIntent().getStringExtra(Constants.SHORT_DESCRIPTION)
+                                ,steps))
                 .commit();
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.navigation);
-       // Menu menu = navigationView.getMenu();
-        //menu.add("Hello");
-        AppBarConfiguration mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.steps_list_root)
-                .setDrawerLayout(drawerLayout).build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController( this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+
 
     }
 }
