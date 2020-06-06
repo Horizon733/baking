@@ -98,16 +98,7 @@ public class RecipeDetailFragment extends Fragment {
         playerView = rootView.findViewById(R.id.player);
         descriptionTv = rootView.findViewById(R.id.description_tv);
         shortDescriptionTv = rootView.findViewById(R.id.short_description);
-        DrawerLayout drawerLayout = rootView.findViewById(R.id.drawer_layout);
-        NavigationView navigationView = rootView.findViewById(R.id.navigation);
-        Menu menu = navigationView.getMenu();
-        menu.add("Hello");
-        AppBarConfiguration mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.steps_list_root)
-                .setDrawerLayout(drawerLayout).build();
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController((AppCompatActivity) getActivity(), navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        fullScreenmode();
+      fullScreenmode();
         return rootView;
     }
 
